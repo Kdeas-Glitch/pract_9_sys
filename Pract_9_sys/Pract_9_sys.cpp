@@ -5,11 +5,11 @@
 #include <iostream>
 
 volatile UINT w = 0;
-DWORD WINAPI Add() {
+DWORD WINAPI Add(LPVOID iNum) {
     while (true) {
         w++;
         std::cout << w << std::endl;
-        Sleep(100);
+        Sleep(1000);
     }
     return 0;
 }
@@ -23,6 +23,15 @@ int main()
     wchar_t Paint[] = L"C:\\WINDOWS\\system32\\mspaint.exe";
     wchar_t Excel[] = L"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE";
     STARTUPINFO si;
+    HANDLE hThread;
+    DWORD IDThread;
+    hThread = CreateThread(NULL, 0, Add, (void*)0, 0, &IDThread);
+    if (hThread == NULL) {
+        return GetLastError();
+    }
+    if (DuplicateHandle(hThread, NULL, NULL, (void*)count, NULL, NULL, NULL)) {
+
+    }
     PROCESS_INFORMATION excelApp[100];
     PROCESS_INFORMATION wordApp[100];
     PROCESS_INFORMATION paintApp[100];
@@ -30,7 +39,7 @@ int main()
     PROCESS_INFORMATION piApp[100];
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
-    if (!CreateProcess(count, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &piApp[0])) {
+    if (!CreateProcess(Word, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &piApp[0])) {
         std::cout << "Child process is not Created";
         _getch();
         return 0;
