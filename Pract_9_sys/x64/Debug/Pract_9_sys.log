@@ -1,2 +1,4 @@
 ﻿  Pract_9_sys.cpp
-  Pract_9_sys.vcxproj -> C:\Users\HardShop\Desktop\Projects\pract_9_sys\x64\Debug\Pract_9_sys.exe
+C:\Users\st310-04\Desktop\Демин\pract_9_sys\Pract_9_sys\Pract_9_sys.cpp(47,13): warning C4311: приведение типов: усечение указателя из "HANDLE" в "int"
+C:\Users\st310-04\Desktop\Демин\pract_9_sys\Pract_9_sys\Pract_9_sys.cpp(47,13): warning C4302: приведение типов: усечение из "HANDLE" к "int"
+  Pract_9_sys.vcxproj -> C:\Users\st310-04\Desktop\Демин\pract_9_sys\x64\Debug\Pract_9_sys.exe

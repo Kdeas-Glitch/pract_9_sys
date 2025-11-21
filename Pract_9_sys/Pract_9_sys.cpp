@@ -5,7 +5,7 @@
 #include <iostream>
 
 volatile UINT w = 0;
-DWORD WINAPI Add(LPVOID iNum) {
+DWORD WINAPI Add() {
     while (true) {
         w++;
         std::cout << w << std::endl;
@@ -17,33 +17,42 @@ DWORD WINAPI Add(LPVOID iNum) {
 int main()
 {
     setlocale(0, "rus");
-    wchar_t count[] = L"C:\\Users\\st310-04\\Desktop\\Демин\\Count\\x64\\Debug\\Count.exe";
-    wchar_t Word[] = L"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE";
-    wchar_t NotePad[] = L"C:\\WINDOWS\\system32\\notepad.exe";
-    wchar_t Paint[] = L"C:\\WINDOWS\\system32\\mspaint.exe";
-    wchar_t Excel[] = L"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE";
-    STARTUPINFO si;
-    HANDLE hThread;
-    DWORD IDThread;
-    hThread = CreateThread(NULL, 0, Add, (void*)0, 0, &IDThread);
-    if (hThread == NULL) {
-        return GetLastError();
-    }
-    if (DuplicateHandle(hThread, NULL, NULL, (void*)count, NULL, NULL, NULL)) {
+    wchar_t count[255] = L"C:\\Users\\st310-04\\Desktop\\Демин\\Count\\x64\\Debug\\Count.exe ";
+    wchar_t Word[] = L"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE ";
+    wchar_t NotePad[] = L"C:\\WINDOWS\\system32\\notepad.exe ";
+    wchar_t Paint[] = L"C:\\WINDOWS\\system32\\mspaint.exe ";
+    wchar_t Excel[] = L"C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE ";
 
-    }
     PROCESS_INFORMATION excelApp[100];
     PROCESS_INFORMATION wordApp[100];
     PROCESS_INFORMATION paintApp[100];
     PROCESS_INFORMATION notepadApp[100];
     PROCESS_INFORMATION piApp[100];
+    wchar_t lpz[256] = L"";
+    STARTUPINFO si;
+    HANDLE hThread;
+    DWORD IDThread;
+    hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Add, NULL, HANDLE_FLAG_INHERIT, &IDThread);
+    if (hThread == NULL) {
+        return GetLastError();
+    }
+    if (!SetHandleInformation(
+        hThread,
+        HANDLE_FLAG_INHERIT,
+        HANDLE_FLAG_INHERIT)) {
+        return GetLastError();
+    }
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
-    if (!CreateProcess(Word, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &piApp[0])) {
+    _itow_s((int)hThread, lpz, 10);
+    wcscat_s(count, lpz);
+
+    if (!CreateProcess(NULL, count, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &piApp[0])) {
         std::cout << "Child process is not Created";
         _getch();
         return 0;
     }
+
     int c = 0;
     int ex = 0;
     int word = 0;
@@ -88,10 +97,7 @@ int main()
         std::cout << "6-Закрыть NotePad" << std::endl;
         std::cout << "7-Закрыть Paint" << std::endl;
         std::cout << "8-Закрыть Excel" << std::endl;
-        std::cout << "9-Закрыть Всё1" << std::endl;
-        std::cout << "C-Закрыть Счётчик" << std::endl;
-        std::cout << "P-Приостановить Счётчик" << std::endl;
-        std::cout << "S-Запустить Счётчик" << std::endl;
+        std::cout << "9-Закрыть Всё" << std::endl;
         c = _getch();
         switch (c)
         {
@@ -291,10 +297,10 @@ int main()
                 CloseHandle(piApp[0].hProcess);
             break;
         case 'P':
-            SuspendThread(piApp[0].hThread);
+            SuspendThread(hThread);
             break;
         case 'S':
-            ResumeThread(piApp[0].hThread);
+            ResumeThread(hThread);
             break;
         default:
             break;
